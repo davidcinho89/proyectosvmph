@@ -1,0 +1,117 @@
+#flotante{
+    position:fixed;
+    top:0;
+    left: 0%;
+    right: 0%;
+    height:32px;
+    width:100%;
+    text-align:center;
+    z-index:999;
+    display:none;
+    background-color: #369808;
+    padding-top: 8px
+}
+
+#cajaselect{
+    float: left;
+    color:#ffffff;
+    text-align:left;
+    font-family: Verdana,Arial,Helvetica,sans-serif;
+    margin-left: 5%;
+     
+}
+
+.carrito{
+    margin-top: 60px;
+}
+
+.pagenav {
+    background: none repeat scroll 0 0 #fff;
+    border-width: 1px;
+    border-color: green;
+    border-style: solid;
+    float: left;
+    height: 20px;
+    margin: 5px;
+    padding: 5px 5px 2px;
+    text-align: center;
+    width: 20px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.pagenav a{    
+    text-decoration: none;
+    color: #369808;
+}
+
+.pagenavselected {
+    background: none repeat scroll 0 0 #009900;
+    border-width: 1px;
+    border-color: green;
+    border-style: solid;
+    float: left;
+    height: 20px;
+    margin: 5px;
+    padding: 5px 5px 2px;
+    text-align: center;
+    width: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #fff;       
+}
+
+.pagenav2 {
+    background: none repeat scroll 0 0 #fff;
+    border-width: 1px;
+    border-color: green;
+    border-style: solid;
+    float: left;
+    height: 20px;
+    margin: 5px;
+    padding: 5px 5px 2px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: bold;
+}
+.pagenav2 a{    
+    text-decoration: none;
+    color: #369808;
+}
+
+.contenido {
+    font-family:Verdana,Arial,Helvetica,sans-serif;
+    font-size: 11px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+}
+
+.productoitem{
+    margin: 8px;
+    padding: 5px;
+}
+
+.buscarButton{
+    background-color: #F0F0F0;
+    margin: 1px;
+    font-size: 10px;
+    border: 1px solid #B8B8B6;
+    border-radius: 5px 5px 5px 5px;
+    color: #444;
+    font-weight: bold;
+    cursor: pointer;
+    height: 22px;
+    padding: 2px;
+    text-transform: uppercase;
+    vertical-align: middle;
+    width: 80px;
+}
+
+.buscarButton:hover{
+    color : #fff;
+    background-color: #F3AB63;
+    border:1px solid #C2E1EF;
+    cursor: pointer;
+    padding:2px;
+}

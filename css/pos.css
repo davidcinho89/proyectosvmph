@@ -1,0 +1,40 @@
+root { 
+    display: block;
+} 
+
+#main {
+    height: 100%;
+    margin: auto;
+    width: 99%;    
+}
+#content {  
+    border: 1px solid #B8B8B6;
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 0 0 7px #666666;
+    height: auto !important;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    min-height: 500px;
+    padding: 10px;
+    vertical-align: middle;
+    width: auto;
+}
+
+.panelizquierdo
+{
+  border: 1px #EC690F solid;
+  border-radius: 5px;
+  width: 75%;  
+  background-color: #fff;
+  vertical-align: top;
+  height: 100%; 
+}    
+.panelderecho{
+  margin: 5px; 
+  border: 1px #EC690F solid;
+  border-radius: 5px;
+  width: 25%;
+  background-color: #fff;
+  vertical-align: top;
+  height: 100%
+}

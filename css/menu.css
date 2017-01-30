@@ -1,0 +1,20 @@
+root {  
+    display: block;
+}
+body{
+background: url("../images/bg.png");
+background-repeat: repeat; 
+margin-left: 0px;
+    border: 1px solid #B8B8B6;
+    border-radius: 0 5px 5px 0px; 
+    box-shadow: 0 0 7px #666666;
+    height: auto !important;
+    margin-bottom: 5px;
+    margin-top: 7px;   
+    padding-top: 3px; 
+    vertical-align: middle;
+    width: 112px;  
+}
+body img{
+ border: none   
+}  

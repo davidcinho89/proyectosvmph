@@ -1,0 +1,52 @@
+ul#navigation {
+    position: fixed;
+    margin: 0 0 0 20%;
+    padding: 0px;
+    top: 0px;    
+    list-style: none;
+    z-index:999999;
+    width:720px;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 12px;    
+    font-weight: bold;
+}
+ul#navigation li {
+    width: 175px;
+    display:inline;
+    float:left;    
+}
+ul#navigation li a {
+    display: block;
+    float:left;
+    margin-top: -2px;
+    width: 160px;
+    height: 25px;
+    background-color:#369808;
+    background-repeat:no-repeat;
+    background-position:50% 10px;
+    border-radius: 10px 10px 10px 10px;  
+    text-decoration:none;
+    text-align:center;
+    padding-top:80px;        
+}
+ul#navigation li a:hover{
+     background-color:#0C3;
+}
+ul#navigation li a span{
+    letter-spacing:2px;
+    font-size:13px;
+    color:#FFF;
+    font-weight:bold;        
+}
+ul#navigation .home a{
+    background-image: url(../images/home.png);
+}
+ul#navigation .about a      {
+    background-image: url(../images/id_card.png);
+}
+ul#navigation .search a      {
+    background-image: url(../images/search.png);
+}
+ul#navigation .photos a     {
+    background-image: url(../images/camera.png);
+}

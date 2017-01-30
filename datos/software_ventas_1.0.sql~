@@ -866,7 +866,7 @@ ALTER SEQUENCE periodos_idperiodo_seq OWNED BY periodos.idperiodo;
 -- Name: periodos_idperiodo_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('periodos_idperiodo_seq', 20, true);
+SELECT pg_catalog.setval('periodos_idperiodo_seq', 54, true);
 
 
 --
@@ -906,7 +906,7 @@ ALTER SEQUENCE periodosventa_idperiodosventa_seq OWNED BY periodosventa.idperiod
 -- Name: periodosventa_idperiodosventa_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('periodosventa_idperiodosventa_seq', 2, true);
+SELECT pg_catalog.setval('periodosventa_idperiodosventa_seq', 6, true);
 
 
 --

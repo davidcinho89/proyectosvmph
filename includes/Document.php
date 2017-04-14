@@ -22,7 +22,9 @@ class Document {
     }
 
     function setHeader() {
-        session_start();
+        if (session_id()==="") {            
+            session_start();
+        }
         $this->document .='<head>' . "\n";
         $this->document .='<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />' . "\n";
         $this->document .= '<title>' . $this->title . '</title>' . "\n";

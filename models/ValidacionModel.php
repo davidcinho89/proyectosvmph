@@ -139,8 +139,8 @@ class ValidacionModel extends ModelBase {
         }
     }
 
-    function validar_presencia($value) {
-        $values = (string) $values;
+    function validar_presencia($value = "") {
+        $values = (string) $value;
         if ($value != '') {
             return true;
         } else {

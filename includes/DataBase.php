@@ -22,6 +22,18 @@ class DataBase {
             mysql_select_db($this->config->get('dbname'), $this->conexion) or die("no se ha encontrado la base de datos" . mysql_error());
         }
     }
+    
+    function startTransaction() {
+        pg_query($this->conexion,"BEGIN");
+    }
+    
+    function commitTransaction() {
+        pg_query($this->conexion,"COMMIT");
+    }
+    
+    function rollbackTransaction() {
+        pg_query($this->conexion,"ROLLBACK");
+    }
 
     function executeQue($query) {
         $rs = null;
@@ -29,24 +41,18 @@ class DataBase {
         $tiempo2=0;
         if ($this->config->get('dbtype') == "postgres") {
             $tiempo1=microtime();
-            if ($rs = pg_query($this->conexion, $query)) {
-            $tiempo2=microtime();
-            $total=($tiempo2-$tiempo1)*1000;
-                if($this->config->get('logs')){
-                    error_log($query . " \n", 3, LOG);
-                    error_log("Tiempo de ejecucion: " . $total . " \n", 3, LOG);
-                }                
-            } else {
+            $rs = pg_query($this->conexion, $query);            
+            if ($rs===false) {
                 if($this->config->get('logs')){
                     $accion=isset($_GET['accion'])?$_GET['accion']:"main";
                    // $postvar=json_encode(utf8_encode($_POST[]));
                    // $getvar=json_encode(utf8_encode($_GET[]));
-                    error_log("\n\n" . "Fecha y hora: " . date("Y-m-d H:i:s") . " \n", 3, LOGDB);
+                   /* error_log("\n\n" . "Fecha y hora: " . date("Y-m-d H:i:s") . " \n", 3, LOGDB);
                     error_log("Ruta: " . CONTROLLERS . DS . $_GET['controlador'] . 'Controller.php' . " \n", 3, LOGDB);
-                    error_log("Controlador: " . $_GET['controlador'] . "Controller \n", 3, LOGDB);
+                    error_log("Controlador: " . $_GET['controlador'] . "Controller \n", 3, LOGDB);*/
                     //error_log("Post: " . $postvar . " \n", 3, LOGDB);
                    // error_log("Get: " . $getvar . " \n", 3, LOGDB);
-                    error_log("Error en la consulta: " . $query . " \n" . pg_last_error($this->conexion), 3, LOGDB);
+                   /* error_log("Error en la consulta: " . $query . " \n" . pg_last_error($this->conexion), 3, LOGDB);*/
                 }
                 return false;
             }

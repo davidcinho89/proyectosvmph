@@ -15,18 +15,24 @@ class Validacion {
     }
 
     public function isLogged() {
-        session_start();
+        if (session_id()==="") {            
+            session_start();
+        }
         if (isset($_SESSION['user']) && isset($_SESSION['autentificado']) && isset($_SESSION['certifed'])) {
             $usuario = unserialize($_SESSION['user']);
             if ($_SESSION['autentificado'] == "si" && $_SESSION['certifed'] === str_repeat(strrev(sha1($usuario->getIpUser() . "@pPliccati0N" . date("Y-m-d"))), 6)) {
                 return true;
             } else {
-                ob_end_clean();
+                if (ob_get_status()) {
+                    ob_end_clean();
+                }
                 session_destroy();
                 header('location: index.php?controlador=User&accion=Login');
             }
         } else {
-            ob_end_clean();
+            if (ob_get_status()) {
+                ob_end_clean();
+            }
             session_destroy();
             header('location: index.php?controlador=User&accion=Login');
         }
@@ -83,7 +89,8 @@ class Validacion {
                     }
                     $autentificado = "si";
                     $_SESSION['autentificado'] = $autentificado;
-                    $usuario = new GUser($row['idusuario'], $row['nombreusuario'], $row['email'], $row['perfil'], $row['alias'], $row['idbodega']);
+                    $usuario = new GUser($row['idusuario'], $row['nombreusuario'], $row['email'], $row['perfil'], $row['alias']);
+                    /* VALIDAR QUE SOLO SE EJECUTEN EN DESARROLLO Y ASIGNAR PERMISOS
                     error_log("\n\nInicio de nueva sesion por: \n", 3, LOGUSER);
                     error_log("Id: " . $row['idusuario'] . " \n", 3, LOGUSER);
                     error_log("Nombre: " . $row['nombreusuario'] . " \n", 3, LOGUSER);
@@ -91,7 +98,7 @@ class Validacion {
                     error_log("Perfil: " . $row['perfil'] . " \n", 3, LOGUSER);
                     error_log("Alias: " . $row['alias'] . " \n", 3, LOGUSER);
                     error_log("Ip: " . $usuario->getIpUser() . " \n", 3, LOGUSER);
-                    error_log("Fecha: " . date("Y-m-d H:i:s") . " \n", 3, LOGUSER);
+                    error_log("Fecha: " . date("Y-m-d H:i:s") . " \n", 3, LOGUSER);*/
                     $cadenadeexp = str_repeat(strrev(sha1($usuario->getIpUser() . "@pPliccati0N" . date("Y-m-d"))), 6);
                     $_SESSION['user'] = serialize($usuario);
                     $_SESSION['certifed'] = $cadenadeexp;

@@ -40,6 +40,7 @@ class SaldosModel extends ModelBase {
                 v.cantidad,
                 v.fechasaldo
             from saldoinventario v where v.fechacarga>='$fechainicial' and v.fechacarga<='$fechafinal'");
+        $ventas = array();
         while ($row = $this->db->arrayResult($consulta)) {
             $ventas[] = array("producto" => $row['codigoproducto'],
                 "tienda" => $row['codigobodega'],
@@ -81,7 +82,7 @@ class SaldosModel extends ModelBase {
     }
 
     function getsaldos($nombrearchivo) {
-        $consulta = $this->db->executeQue("select * from saldoinventario where urlarchivo='$nombrearchivo'");
+        $consulta = $this->db->executeQue("select urlarchivo from saldoinventario where urlarchivo='$nombrearchivo'");
         if ($this->db->numRows($consulta) == 0) {
             return false;
         } else {
@@ -91,7 +92,7 @@ class SaldosModel extends ModelBase {
 
     public function createDataSessionSaldos() {
         $destino = 'tmp' . SL . $_FILES["exceldatos"]["name"];
-        copy($_FILES["exceldatos"]["tmp_name"], $destino);
+        @copy($_FILES["exceldatos"]["tmp_name"], $destino);
         $objPHPExcel = PHPExcel_IOFactory::load($destino);
         $objWorksheet = $objPHPExcel->getActiveSheet();
         $noit = 1;
@@ -101,7 +102,7 @@ class SaldosModel extends ModelBase {
         foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
             if ($noit == 1) {
                 $highestRow = $worksheet->getHighestRow();
-                $cont = 0;
+                $cont = 0;      
                 for ($row = 1; $row <= $highestRow; $row++) {
                     $objPHPExcel->getActiveSheet()->getStyle('D' . $row)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
                     //$objPHPExcel->getActiveSheet()->getStyle('A' . $row)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
@@ -144,16 +145,18 @@ class SaldosModel extends ModelBase {
                                 $validacion = false;
                                 $arrayRespuesta[] = array($producto, $precio, $cantidad, $tienda, 'Codigo incorrecto o tienda no existe');
                             }
-                        }
-                        if ($cont > 3) {
-                            $highestRow = 0;
-                        }
+                        }                        
+                    }
+                    if ($cont > 10) {
+                        $highestRow = 0;
                     }
                 }
                 $noit = 2;
             }
         }
-        if ($validacion) {
+        if ($validacion===true) {
+            $completaCarga = true;            
+            $this->db->startTransaction();             
             foreach ($arrayRespuesta as $value) {
                 $idsaldo = $this->getIdSecuencia("nextval('saldoinventario_idsaldoinventario_seq'::regclass)");
                 $precio = $value[1];
@@ -165,8 +168,21 @@ class SaldosModel extends ModelBase {
                 $mes = $_POST["mesventa"];
                 $semana = $_POST["semanaventa"];
                 $fecha = date("Y-m-d H:i:s");
-                $this->db->executeQue("insert into saldoinventario 
+                $resultado = $this->db->executeQue("insert into saldoinventario 
                         values($idsaldo,$idproducto,$idbodega,$cantidad,$precio,'$anio-$mes-$semana','$fecha','$archivo');");
+                if ($resultado == false) {
+                    $this->db->rollbackTransaction();
+                    $validacion = false;
+                    $completaCarga = false;
+                    $arrayRespuesta = array();
+                    $arrayRespuesta[] = array("Ha ocurrido un error en el sistema","","","","");
+                    $cont2 = 0;
+                    break;
+                }                
+            }
+            
+            if ($completaCarga==true) {
+               $this->db->commitTransaction(); 
             }
         }
         $ressss[0] = $arrayRespuesta;
@@ -187,15 +203,13 @@ class SaldosModel extends ModelBase {
             $productosstock = array("id" => $row['idproducto'],
                 "referencia" => $row['referencia'],
                 "nombre" => $row['nombreproducto'],
-                "stock" => $row['stock'],
-                "costo" => $row['costo'],
                 "unidad" => $row['unidadmedida']);
             return $productosstock;
         }
     }
 
     private function existeTienda($referencia) {
-        $consulta = $this->db->executeQue("select * from bodegas where codigobodega=$referencia");
+        $consulta = $this->db->executeQue("select bodegaid from bodegas where codigobodega=$referencia");
         if ($this->db->numRows($consulta) == 0) {
             return false;
         } else {

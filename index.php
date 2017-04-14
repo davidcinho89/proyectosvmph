@@ -1,5 +1,8 @@
 <?php
-error_reporting(0);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+ini_set('error_reporting', E_ALL);
+ini_set('max_execution_time', 120);
 define('EXECG__', 20);
 define("DS", DIRECTORY_SEPARATOR);
 define("SL", "/");

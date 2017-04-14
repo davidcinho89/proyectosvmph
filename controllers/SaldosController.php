@@ -78,8 +78,9 @@ class SaldosController extends ControllerBase {
             $fecha2->modify('last day of this month');                        
             $productosstock = $this->model->getProductosStock($fecha1->format('Y-m-d')." 00:00:00",$fecha2->format('Y-m-d')." 23:59:59"); 
         }                
-        $mensagge = !$_GET["respuesta"] ? null : $_GET["respuesta"];
-        $registros = !$_GET["registros"] ? null : $_GET["registros"];
+               
+        $mensagge = filter_input(INPUT_GET, "respuesta");
+        $registros = filter_input(INPUT_GET, "registros");
         $this->view->setVars('productosstock', $productosstock);
         $this->view->setVars('mensagge', $mensagge);
         $this->view->setVars('registros', $registros);
@@ -117,7 +118,7 @@ class SaldosController extends ControllerBase {
                 if (!$this->model->getsaldos($_FILES['exceldatos']['name'])) {
                     if (!$this->model->verificarFecha($_POST["anioventa"], $_POST["mesventa"], $_POST["semanaventa"])) {
                         $misdatos = $this->model->createDataSessionSaldos();
-                        if ($misdatos[1]) {
+                        if ($misdatos[1]===true) {
                             $_SESSION['resultados'] = $misdatos[0];
                             $respuesta['registros'] = $misdatos[2];
                             $respuesta['respuesta'] = 'si';
@@ -149,8 +150,7 @@ class SaldosController extends ControllerBase {
         }
     }
 
-    public function WriteExcelNotify() {
-        error_reporting(E_ALL);
+    public function WriteExcelNotify() {                
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="Resultado_carga_masiva_' . date("Y") . '_' . date("m") . '_' . date("d") . '.xlsx"');
         header('Cache-Control: max-age=0');

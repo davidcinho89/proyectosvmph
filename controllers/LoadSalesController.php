@@ -79,9 +79,9 @@ class LoadSalesController extends ControllerBase {
             $fecha2->modify('last day of this month');                        
             $productosstock = $this->model->getProductosStock($fecha1->format('Y-m-d')." 00:00:00",$fecha2->format('Y-m-d')." 23:59:59"); 
         }        
-        
-        $mensagge = !$_GET["respuesta"] ? null : $_GET["respuesta"];
-        $registros = !$_GET["registros"] ? null : $_GET["registros"];
+                
+        $mensagge = filter_input(INPUT_GET, "respuesta");
+        $registros = filter_input(INPUT_GET, "registros");
         $this->view->setVars('productosstock', $productosstock);
         $this->view->setVars('mensagge', $mensagge);
         $this->view->setVars('registros', $registros);
@@ -119,7 +119,7 @@ class LoadSalesController extends ControllerBase {
                 if (!$this->model->getventas($_FILES['exceldatos']['name'])) {
                     if (!$this->model->verificarFecha($_POST["anioventa"], $_POST["mesventa"], $_POST["semanaventa"])) {
                         $misdatos = $this->model->createDataSessionInventory();
-                        if ($misdatos[1]) {
+                        if ($misdatos[1]===true) {
                             $_SESSION['resultados'] = $misdatos[0];
                             $respuesta['registros'] = $misdatos[2];
                             $respuesta['respuesta'] = 'si';

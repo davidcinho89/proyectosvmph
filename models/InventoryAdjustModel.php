@@ -21,6 +21,7 @@ class InventoryAdjustModel extends ModelBase {
                 v.cantidadventa,
                 v.fecharealventa
             from ventas v where v.fecharealventa>='$fechainicial' and v.fecharealventa<='$fechafinal'");
+        $ventas = array();
         while ($row = $this->db->arrayResult($consulta)) {               
             $ventas[] = array("producto" => $row['codigoproducto'],
                 "tienda" => $row['codigobodega'],
@@ -72,6 +73,7 @@ class InventoryAdjustModel extends ModelBase {
                 and p.estado='activo'
                 and b.idbodega=$idbodega
                 order by p.idcategoria, p.nombreproducto asc");
+        $productosstock = array();
         while ($row = $this->db->arrayResult($consulta)) {
             $productosstock[] = array("id" => $row['idproducto'],
                 "referencia" => $row['referencia'],
@@ -81,7 +83,7 @@ class InventoryAdjustModel extends ModelBase {
     }
     
     function getventas($nombrearchivo){        
-        $consulta = $this->db->executeQue("select * from ventas where urlarchivo='$nombrearchivo'");        
+        $consulta = $this->db->executeQue("select urlarchivo from ventas where urlarchivo='$nombrearchivo'");        
         if ($this->db->numRows($consulta) == 0) {
             return false;
         } else {           
@@ -91,7 +93,7 @@ class InventoryAdjustModel extends ModelBase {
 
     public function createDataSessionInventory() {
         $destino = 'tmp' . SL . $_FILES["exceldatos"]["name"];
-        copy($_FILES["exceldatos"]["tmp_name"], $destino);
+        @copy($_FILES["exceldatos"]["tmp_name"], $destino);
         $objPHPExcel = PHPExcel_IOFactory::load($destino);
         $objWorksheet = $objPHPExcel->getActiveSheet();        
         $noit = 1;
@@ -125,8 +127,8 @@ class InventoryAdjustModel extends ModelBase {
                                 $producto2 = $this->existeProducto($producto);
                                 if ($producto2) {
                                     if (is_numeric($cantidad)) {
-                                        if (is_numeric($precio)) {
-                                            $arrayRespuesta[] = array($tienda, $producto, $cantidad, $precio, 'Correcto', $producto2["id"], $tienda2["id"]);
+                                        if (is_numeric($precio)) {                                            
+                                            $arrayRespuesta[] = array($tienda, $producto, $cantidad, $precio, 'Correcto', $producto2["id"], $tienda2["id"]);                                            
                                             $cont2++;
                                         } else {
                                             $validacion = false;
@@ -144,16 +146,18 @@ class InventoryAdjustModel extends ModelBase {
                                 $validacion = false;
                                 $arrayRespuesta[] = array($tienda, $producto, $cantidad, $precio, 'Codigo incorrecto o tienda no existe');
                             }
-                        }
-                        if ($cont > 3) {
-                            $highestRow = 0;
-                        }
+                        }                        
+                    }
+                    if ($cont > 10) {
+                        $highestRow = 0;
                     }
                 }
                 $noit = 2;
             }
         }
-        if ($validacion) {
+        if ($validacion===true) {
+            $completaCarga = true;             
+            $this->db->startTransaction(); 
             foreach ($arrayRespuesta as $value) {
                 $idventa = $this->getIdSecuencia("nextval('ventas_idventa_seq'::regclass)");
                 $precio = $value[3];
@@ -164,9 +168,22 @@ class InventoryAdjustModel extends ModelBase {
                 $anio = $_POST["anioventa"];
                 $mes = $_POST["mesventa"];
                 $semana = $_POST["semanaventa"];
-                $fecha = date("Y-m-d H:i:s");
-                $this->db->executeQue("insert into ventas 
+                $fecha = date("Y-m-d H:i:s");                
+                $resultado =$this->db->executeQue("insert into ventas 
                         values($idventa,$precio,'$archivo',$idbodega,$idproducto,$cantidad,NULL,'$fecha','$anio-$mes-$semana');");
+                if ($resultado == false) {
+                    $this->db->rollbackTransaction();
+                    $completaCarga = false;
+                    $validacion = false;
+                    $arrayRespuesta = array();
+                    $arrayRespuesta[] = array("Ha ocurrido un error en el sistema","","","","");
+                    $cont2 = 0;
+                    break;
+                }
+            }
+            
+            if ($completaCarga==true) {
+               $this->db->commitTransaction(); 
             }
         }
         $ressss[0]=$arrayRespuesta;
@@ -187,15 +204,13 @@ class InventoryAdjustModel extends ModelBase {
             $productosstock = array("id" => $row['idproducto'],
                 "referencia" => $row['referencia'],
                 "nombre" => $row['nombreproducto'],
-                "stock" => $row['stock'],
-                "costo" => $row['costo'],
                 "unidad" => $row['unidadmedida']);
             return $productosstock;
         }
     }
 
     private function existeTienda($referencia) {
-        $consulta = $this->db->executeQue("select * from bodegas where codigobodega=$referencia");
+        $consulta = $this->db->executeQue("select bodegaid from bodegas where codigobodega=$referencia");
         if ($this->db->numRows($consulta) == 0) {
             return false;
         } else {
@@ -320,7 +335,7 @@ class InventoryAdjustModel extends ModelBase {
     }
 
     private function getUltimoCostoStock($idproducto, $idbodega) {
-        $query = "select * from bodegasproductos where idbodega=$idbodega and idproducto=$idproducto";
+        $query = "select idbodegaproductos, costo, stock from bodegasproductos where idbodega=$idbodega and idproducto=$idproducto";
         $consulta = $this->db->executeQue($query);
         $bodegaproducto = null;
         while ($row = $this->db->arrayResult($consulta)) {
